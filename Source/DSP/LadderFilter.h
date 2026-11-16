@@ -2,6 +2,11 @@
 #include <cmath>
 #include <algorithm>
 
+namespace
+{
+    constexpr float kTwoPi = 6.28318530717958647692f;
+}
+
 // A cheap 4-pole transistor-ladder-style lowpass (24 dB/oct), in the spirit
 // of the CS-15's resonant VCF. Not a precise circuit model, just a simple
 // nonlinear feedback cascade that gets the character (self-oscillation-ish
@@ -27,7 +32,7 @@ public:
     float processSample (float input)
     {
         // Normalized cutoff -> one-pole coefficient per stage.
-        const float wc = 2.0f * (float) M_PI * cutoff / (float) sampleRate;
+        const float wc = kTwoPi * cutoff / (float) sampleRate;
         const float g = std::clamp (wc, 0.0f, 1.2f);
 
         // Resonance feeds the last stage's output back to the input,
