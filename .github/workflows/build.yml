@@ -9,7 +9,7 @@ on:
 jobs:
   build-macos:
     name: macOS (AU + VST3)
-    runs-on: macos-14
+    runs-on: macos-13
     steps:
       - uses: actions/checkout@v4
         with:
@@ -41,7 +41,7 @@ jobs:
           submodules: recursive
 
       - name: Configure
-        run: cmake -B build -G "Visual Studio 17 2022" -A x64
+        run: cmake -B build -A x64
 
       - name: Build
         run: cmake --build build --config Release --target CS15Synth_VST3 -j4
