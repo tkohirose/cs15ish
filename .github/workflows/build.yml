@@ -1,0 +1,58 @@
+name: Build plugins
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build-macos:
+    name: macOS (AU + VST3)
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Configure
+        run: cmake -B build -G Xcode
+
+      - name: Build
+        run: cmake --build build --config Release --target CS15Synth_AU CS15Synth_VST3 -j4
+
+      - name: Package
+        run: |
+          mkdir -p artifacts
+          cp -R "build/CS15Synth_artefacts/Release/AU/CS-15 Style Synth.component" artifacts/
+          cp -R "build/CS15Synth_artefacts/Release/VST3/CS-15 Style Synth.vst3" artifacts/
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: CS15Synth-macOS
+          path: artifacts/*
+
+  build-windows:
+    name: Windows (VST3)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Configure
+        run: cmake -B build -G "Visual Studio 17 2022" -A x64
+
+      - name: Build
+        run: cmake --build build --config Release --target CS15Synth_VST3 -j4
+
+      - name: Package
+        shell: bash
+        run: |
+          mkdir -p artifacts
+          cp -R "build/CS15Synth_artefacts/Release/VST3/CS-15 Style Synth.vst3" artifacts/
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: CS15Synth-Windows
+          path: artifacts/*
